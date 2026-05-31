@@ -1,0 +1,237 @@
+
+.header-search-wrapper {
+  position: relative;
+}
+
+.header-search-input {
+  width: 380px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  outline: none;
+  font-size: 14px;
+  color: #334155;
+}
+
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-badge-trigger {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.notification-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-widget-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 1px solid #e2e8f0;
+  padding-left: 16px;
+}
+
+.profile-identity-text {
+  text-align: right;
+}
+
+.profile-identity-text .greeting {
+  font-weight: 500;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.profile-identity-text .user-role {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0c4a34;
+}
+
+.profile-avatar-frame {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #fef08a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1.5px solid #e2e8f0;
+}
+
+.profile-avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   Summary Banner Graphics & Inline Indicators
+   ========================================================================== */
+.banner-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.banner-subtitle {
+  color: #d1fae5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.status-indicator-dot {
+  color: #4ade80;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator-signal {
+  margin-left: 4px;
+}
+
+
+   /* Trends Line Graph Timeline */
+
+.trend-filter-select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  outline: none;
+}
+
+.chart-vector-canvas {
+  overflow: visible;
+}
+
+.legend-item-marker-blue { background-color: #3b82f6; }
+.legend-item-marker-orange { background-color: #f97316; }
+.legend-item-marker-green { background-color: #10b981; }
+.legend-item-marker-purple { background-color: #8b5cf6; }
+
+   /* Smart Icons */
+  
+.advisory-badge-layout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.advisory-icon-crop { background-color: #f0fdf4; }
+.advisory-icon-fertilizer { background-color: #fff7ed; }
+.advisory-icon-irrigation { background-color: #eff6ff; }
+
+.advisory-tag-crop { color: #16a34a; }
+.advisory-tag-fertilizer { color: #ea580c; }
+.advisory-tag-irrigation { color: #2563eb; }
+
+
+   /* Field Overview Structure  */
+   
+.field-header-link {
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cell-emphasized {
+  font-weight: 600;
+}
+
+.pill-status-good { background-color: #dcfce7; color: #15803d; }
+.pill-status-mod { background-color: #fef9c3; color: #a16207; }
+.pill-status-poor { background-color: #fee2e2; color: #b91c1c; }
+
+.status-bullet-small {
+  font-size: 10px;
+}
+
+
+   /* Soil Health Progress Widget */
+
+.panel-spacer-bottom {
+  padding-bottom: 16px;
+}
+
+.right-side-column-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.radial-center-text-score {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.radial-center-text-status {
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  text-transform: uppercase;
+}
+
+.health-summary-details {
+  flex: 1;
+}
+
+.health-summary-details p {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.health-details-action-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+
+   /* Quick Diagnostic Triggers and footer */
+ 
+.quick-actions-headline {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.footer-compliance-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #16a34a;
+  font-weight: 600;
+}
