@@ -1,0 +1,14 @@
+# Frontend exclusions
+agrosense-frontend/node_modules/
+agrosense-frontend/dist/
+agrosense-frontend/.env
+
+# Backend exclusions
+__pycache__/
+*.pyc
+agrosense-backend/venv/
+agrosense-backend/.env
+db.sqlite3
+
+# OS exclusions
+.DS_Store
