@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MetricCard from './components/MetricCard';
-import LiveDataView from './components/LiveDataView'; // 1. Imported your live tracking view
-import { initialSensorData } from './data/mockData';
-import './App.css'; // Link to our cleaned code structure stylesheet
+import LiveDataView from './components/LiveDataView'; 
 import Register from './components/Register';
 import Login from './components/login';
-
+import CropSuggestion from './components/CropSuggestion.jsx';
+import { initialSensorData } from './data/mockData';
+import './App.css'; 
 
 function App() {
   // DJANGO BACKEND CONNECTION STATES 
@@ -17,8 +16,6 @@ function App() {
   
   // Main Tab Routing State Manager
   const [activeTab, setActiveTab] = useState('dashboard');
-
-
   const [username, setUsername] = useState('Farmer');
 
   // Tracks if the user has a valid Django JWT token saved in their browser
@@ -52,7 +49,7 @@ function App() {
   useEffect(() => {
     // Only query data from your Django API if the user has authenticated successfully
     if (!isAuthenticated) return;
-    // Isolated data-fetching function to look clean and allow repeated background execution
+    
     const fetchSensorData = () => {
       fetch('http://127.0.0.1:8000/api/sensors/')
         .then((response) => {
@@ -76,7 +73,7 @@ function App() {
     // 1. Initial invocation immediately when the app mounts on screen
     fetchSensorData();
 
-    // 2. Clear out manual updates: background polling loop fetches fresh database records every 5 seconds (5000ms)
+    // 2. Background polling loop fetches fresh database records every 5 seconds (5000ms)
     const dataPollingInterval = setInterval(() => {
       fetchSensorData();
     }, 5000);
@@ -97,8 +94,7 @@ function App() {
     );
   }
 
-  // target index 0 
-  // If database is initialized but empty, it applies standard baseline fallbacks
+  // Target index 0: If database is initialized but empty, it applies standard baseline fallbacks
   const latestData = sensorReadings[0] || {
     soil_moisture: 0,
     temperature: 0,
@@ -108,7 +104,56 @@ function App() {
     phosphorus: 0,
     potassium: 0
   };
-const MainDashboardLayout = () => (
+
+  // Modern React Best Practice: Inline layout mapping safely captures contextual parent component states
+  const renderMainContent = () => {
+    if (activeTab === 'live-data') {
+      return <LiveDataView />;
+    }
+    
+    if (activeTab === 'crop-suggestion') {
+      return <CropSuggestion />;
+    }
+    
+    if (activeTab === 'dashboard') {
+      return (
+        <>
+          <div className="welcome-banner">
+            <div>
+              <h1 className="banner-title">Welcome to AgroSense 🌱</h1>
+              <p className="banner-subtitle">IoT-Based Smart Soil Monitoring and Crop Recommendation System</p>
+            </div>
+            <div className="system-status-pill">
+              <span className="status-indicator-dot">●</span>
+              <span>System Status: <strong>Live Django Backend Connected</strong></span>
+            </div>
+          </div>
+
+          <section className="metrics-grid">
+            <MetricCard title="Soil Moisture" value={latestData.soil_moisture} unit="%" status={latestData.soil_moisture < 30 ? "Dry" : "Moderate"} iconBg="#eff6ff" sparklineColor="#3b82f6" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>} />
+            <MetricCard title="Temperature" value={latestData.temperature} unit="°C" status="Normal" iconBg="#fff5f5" sparklineColor="#ef4444" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>} />
+            <MetricCard title="Humidity" value={latestData.humidity} unit="%" status="Normal" iconBg="#f0fdf4" sparklineColor="#10b981" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>} />
+            <MetricCard title="Soil pH" value={latestData.soil_ph} unit="" status="Slightly Acidic" iconBg="#f5f3ff" sparklineColor="#8b5cf6" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5"><path d="M10 2v8L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45L14 10V2z"/></svg>} />
+            <MetricCard title="NPK (N-P-K)" value={`${latestData.nitrogen || 0}-${latestData.phosphorus || 0}-${latestData.potassium || 0}`} unit="" status="Good" iconBg="#ecfdf5" sparklineColor="#10b981" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>} />
+          </section>
+
+          <div className="dashboard-layout-row">
+            {/* Existing visual panels for trends, tables, and quick links map here */}
+          </div>
+        </>
+      );
+    }
+
+    // Default under-construction state fallback
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+        <h2>{activeTab.replace('-', ' ').toUpperCase()} Panel</h2>
+        <p style={{ marginTop: '10px', color: '#94a3b8' }}>This section is wired to the menu but view code is pending.</p>
+      </div>
+    );
+  };
+
+  const MainDashboardLayout = () => (
     <div className="app-container">
       <Sidebar currentTab={activeTab} changeTab={setActiveTab} />
       
@@ -129,10 +174,9 @@ const MainDashboardLayout = () => (
               <span className="notification-badge-count">3</span>
             </div>
             
-            {/* Clickable user card now triggers logout to clear system tokens */}
             <div className="profile-widget-container" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Click to log out">
               <div className="profile-identity-text">
-               <div className="greeting">Hi, {username}</div>
+                <div className="greeting">Hi, {username}</div>
                 <div className="user-role">Sign Out</div>
               </div>
               <div className="profile-avatar-frame">
@@ -142,39 +186,8 @@ const MainDashboardLayout = () => (
           </div>
         </header>
 
-        {activeTab === 'live-data' ? (
-          <LiveDataView />
-        ) : activeTab === 'dashboard' ? (
-          <>
-            <div className="welcome-banner">
-              <div>
-                <h1 className="banner-title">Welcome to AgroSense 🌱</h1>
-                <p className="banner-subtitle">IoT-Based Smart Soil Monitoring and Crop Recommendation System</p>
-              </div>
-              <div className="system-status-pill">
-                <span className="status-indicator-dot">●</span>
-                <span>System Status: <strong>Live Django Backend Connected</strong></span>
-              </div>
-            </div>
-
-            <section className="metrics-grid">
-              <MetricCard title="Soil Moisture" value={latestData.soil_moisture} unit="%" status={latestData.soil_moisture < 30 ? "Dry" : "Moderate"} iconBg="#eff6ff" sparklineColor="#3b82f6" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>} />
-              <MetricCard title="Temperature" value={latestData.temperature} unit="°C" status="Normal" iconBg="#fff5f5" sparklineColor="#ef4444" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>} />
-              <MetricCard title="Humidity" value={latestData.humidity} unit="%" status="Normal" iconBg="#f0fdf4" sparklineColor="#10b981" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>} />
-              <MetricCard title="Soil pH" value={latestData.soil_ph} unit="" status="Slightly Acidic" iconBg="#f5f3ff" sparklineColor="#8b5cf6" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5"><path d="M10 2v8L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45L14 10V2z"/></svg>} />
-              <MetricCard title="NPK (N-P-K)" value={`${latestData.nitrogen || 0}-${latestData.phosphorus || 0}-${latestData.potassium || 0}`} unit="" status="Good" iconBg="#ecfdf5" sparklineColor="#10b981" iconSvg={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/></svg>} />
-            </section>
-
-            {/* --- rest of your dashboard HTML structure maps perfectly here --- */}
-            <div className="dashboard-layout-row">
-              {/* [Your existing visual panels for trends, tables, and quick links remain inside here] */}
-            </div>
-          </>
-        ) : (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-            <h2>{activeTab.replace('-', ' ').toUpperCase()} Panel</h2>
-          </div>
-        )}
+        {/* Dynamically renders views inside your dashboard workspace frame */}
+        {renderMainContent()}
 
         <footer className="dashboard-footer">
           <div>© 2026 AgroSense. All rights reserved. Built for Bharatpur Agritech Portal.</div>
@@ -183,7 +196,6 @@ const MainDashboardLayout = () => (
     </div>
   );
 
-  // --- 2. HERE IS WHERE YOU DECLARE THE ROUTING BLOCK MAP ---
   return (
     <Router>
       <Routes>
