@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Sprout, RefreshCw, AlertTriangle, Copy, Check, Clock } from "lucide-react";
 import { apiFetch } from "../utils/api";
-import "./css/FertilizerSuggestion.css";
+import "./css/Fertilizersuggestion.css";
 
 const READING_LABELS = {
   nitrogen: { label: "Nitrogen (N)", unit: "mg/kg" },

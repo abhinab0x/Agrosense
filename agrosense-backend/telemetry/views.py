@@ -54,6 +54,13 @@ class RegisterView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {'error': 'An account with this email address already exists.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if User.objects.filter(username=username).exists():
             return Response(
                 {'error': 'Username already taken.'},

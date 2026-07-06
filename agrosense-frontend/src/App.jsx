@@ -14,6 +14,7 @@ import SoilTrendChart from './components/SoilTrendChart';
 import RecommendationsPanel from './components/RecommendationsPanel';
 import FieldOverview from './components/FieldOverview';
 import SoilHealthScore from './components/SoilHealthScore';
+import History from './components/History';
 import FieldSwitcher from './components/FieldSwitcher';
 import { apiFetch } from './utils/api';
 import { initialSensorData } from './data/mockData';
@@ -49,9 +50,9 @@ function MainDashboardLayout({
             <button className="menu-toggle-btn" onClick={onToggleSidebar}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
                 stroke="#1e293b" strokeWidth="2" strokeLinecap="round">
-                <line x1="4" y1="12" x2="20" y2="12"/>
-                <line x1="4" y1="6"  x2="20" y2="6"/>
-                <line x1="4" y1="18" x2="20" y2="18"/>
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="4" y1="18" x2="20" y2="18" />
               </svg>
             </button>
             <div className="header-search-wrapper">
@@ -78,14 +79,17 @@ function MainDashboardLayout({
             />
 
             <div
-              className="profile-widget-container"
-              onClick={handleLogout}
-              style={{ cursor: 'pointer' }}
-              title="Click to log out"
-            >
+              className="profile-widget-container">
               <div className="profile-identity-text">
                 <div className="greeting">Hi, {username}</div>
-                <div className="user-role">Sign Out</div>
+                <button
+                  className="signout-action-btn"
+                  onClick={handleLogout}
+                  title="Click to securely log out"
+                >
+                  <span>Sign Out</span>
+                  <span className="signout-icon">🚪</span>
+                </button>
               </div>
               <div className="profile-avatar-frame">
                 <img
@@ -178,7 +182,7 @@ function App() {
     apiFetch('/api/alerts/list/')
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setAlerts(data))
-      .catch(() => {});
+      .catch(() => { });
   };
 
   useEffect(() => {
@@ -345,6 +349,8 @@ function App() {
     if (activeTab === 'irrigation-advisor') return <IrrigationAdvisory selectedFieldId={selectedFieldId} />;
     if (activeTab === 'fertilizer-suggestion') return <FertilizerForm selectedFieldId={selectedFieldId} />;
 
+    if (activeTab === 'history') return <History selectedFieldId={selectedFieldId} />;
+
     if (activeTab === 'alerts') {
       return (
         <AlertsPage
@@ -386,7 +392,7 @@ function App() {
               iconSvg={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                   stroke="#2563eb" strokeWidth="2.5">
-                  <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/>
+                  <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
                 </svg>
               }
             />
@@ -401,7 +407,7 @@ function App() {
               iconSvg={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                   stroke="#dc2626" strokeWidth="2.5">
-                  <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                  <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
                 </svg>
               }
             />
@@ -416,7 +422,7 @@ function App() {
               iconSvg={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                   stroke="#16a34a" strokeWidth="2.5">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               }
             />
@@ -431,7 +437,7 @@ function App() {
               iconSvg={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                   stroke="#7c3aed" strokeWidth="2.5">
-                  <path d="M10 2v8L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45L14 10V2z"/>
+                  <path d="M10 2v8L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45L14 10V2z" />
                 </svg>
               }
             />
@@ -446,7 +452,7 @@ function App() {
               iconSvg={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                   stroke="#059669" strokeWidth="2.5">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
                 </svg>
               }
             />
@@ -546,22 +552,22 @@ function App() {
           element={
             isAuthenticated
               ? <MainDashboardLayout
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  username={username}
-                  handleLogout={handleLogout}
-                  renderMainContent={renderMainContent}
-                  alerts={alerts}
-                  onDismissOne={handleDismissOne}
-                  onDismissAll={handleDismissAll}
-                  sidebarOpen={sidebarOpen}
-                  onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
-                  onCloseSidebar={() => setSidebarOpen(false)}
-                  fields={fields}
-                  selectedFieldId={selectedFieldId}
-                  onSelectField={handleSelectField}
-                  onCreateField={handleCreateField}
-                />
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                username={username}
+                handleLogout={handleLogout}
+                renderMainContent={renderMainContent}
+                alerts={alerts}
+                onDismissOne={handleDismissOne}
+                onDismissAll={handleDismissAll}
+                sidebarOpen={sidebarOpen}
+                onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+                onCloseSidebar={() => setSidebarOpen(false)}
+                fields={fields}
+                selectedFieldId={selectedFieldId}
+                onSelectField={handleSelectField}
+                onCreateField={handleCreateField}
+              />
               : <Navigate to="/login" replace />
           }
         />
