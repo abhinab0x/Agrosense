@@ -1,8 +1,3 @@
-/* ==========================================================================
-   AGROSENSE LIVE HARDWARE TELEMETRY SUB-SYSTEM COMPONENT STYLESHEET
-   ========================================================================== */
-
-/* --- Core Layout Containers --- */
 .live-view-container {
   display: flex;
   flex-direction: column;
@@ -31,7 +26,7 @@
   margin-top: 2px;
 }
 
-/* --- Hardware Connection State Indicators --- */
+
 .hardware-status-badge {
   display: flex;
   align-items: center;
@@ -50,7 +45,7 @@
   color: #15803d;
 }
 
-/* FIX: Periods cleanly escaped so the selector parses with zero syntax issues */
+
 .hardware-status-badge.connecting {
   background-color: #fef3c7;
   color: #d97706;
@@ -71,7 +66,7 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* --- Live Parameter Gauges Layout Grid --- */
+
 .live-gauges-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -121,7 +116,7 @@
   color: #64748b;
 }
 
-/* --- Clean Canvas Linear Progress Indicator Vectors --- */
+
 .progress-bar-track {
   width: 100%;
   height: 8px;
@@ -137,14 +132,14 @@
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Color Drivers mapping */
+
 .bg-blue { background-color: #3b82f6; }
 .bg-orange { background-color: #f97316; }
 .bg-green { background-color: #10b981; }
 .bg-purple { background-color: #8b5cf6; }
 .bg-emerald { background-color: #059669; }
 
-/* --- Dynamic Status Text Block Engine --- */
+
 .gauge-meta-status {
   display: block;
   font-size: 13px;
@@ -154,10 +149,10 @@
   transition: color 0.3s ease;
 }
 
-/* Interactive Color Classes called via threshold evaluations */
-.text-danger { 
-  color: #ef4444 !important; 
-  animation: text-breathing 2.5s infinite ease-in-out; 
+
+.text-danger {
+  color: #ef4444 !important;
+  animation: text-breathing 2.5s infinite ease-in-out;
 }
 .text-warning { color: #f97316 !important; }
 .text-blue { color: #2563eb !important; }
@@ -171,7 +166,7 @@
   100% { opacity: 1; }
 }
 
-/* --- Split Panel Matrix Layout (NPK Stack vs Explorer Toggle Panel) --- */
+
 .live-view-row-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -208,7 +203,7 @@
   color: #0f172a;
 }
 
-/* --- Content Panel Base Modifier --- */
+
 .content-panel {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -219,7 +214,7 @@
 .panel-title { font-size: 16px; font-weight: 700; color: #0f172a; display: block; }
 .panel-description { font-size: 14px; color: #64748b; margin: 8px 0 20px 0; line-height: 1.5; }
 
-/* --- Database Control Button Components --- */
+
 .history-control-panel {
   display: flex;
   flex-direction: column;
@@ -239,17 +234,17 @@
   box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.15);
 }
 
-.action-toggle-btn:hover { 
-  background-color: #0369a1; 
-  transform: translateY(-1px); 
+.action-toggle-btn:hover {
+  background-color: #0369a1;
+  transform: translateY(-1px);
 }
 
-.action-toggle-btn.active { 
+.action-toggle-btn.active {
   background-color: #475569;
   box-shadow: none;
 }
 
-/* --- 📊 Premium Database Explorer Component Sheet --- */
+
 .database-explorer-sheet {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -340,7 +335,7 @@
   font-size: 14px;
 }
 
-/* --- Clean Modern Data Grid --- */
+
 .agro-data-table {
   width: 100%;
   border-collapse: collapse;
@@ -392,7 +387,7 @@
 .green-text { color: #16a34a; }
 .purple-text { color: #7c3aed; }
 
-/* NPK Unified Badge Track */
+
 .npk-combined {
   display: flex;
   gap: 6px;
@@ -410,100 +405,256 @@
 .k-badge { background-color: #f0fdf4; color: #166534; }
 
 
-/* ==========================================================================
-   📱 PREMIUM APP-NATIVE MOBILE OVERRIDE MEDIA INJECTIONS
-   ========================================================================== */
-@media (max-width: 768px) {
-  .live-view-container {
+/* =====================================================
+   RESPONSIVE — TABLET (≤1024px)
+   Two-column layouts start collapsing, spacing tightens.
+   ===================================================== */
+@media (max-width: 1024px) {
+  .live-view-row-split {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .live-gauges-grid {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
-    padding: 4px 4px 80px 4px; 
-    background-color: #f8fafc;
   }
 
+  .content-panel,
+  .database-explorer-sheet {
+    padding: 20px;
+  }
+
+  .gauge-value-display .number {
+    font-size: 32px;
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE — MOBILE LANDSCAPE / SMALL TABLET (≤768px)
+   ===================================================== */
+@media (max-width: 768px) {
+   .main-content {
+    min-height: auto;
+  }
+
+  /* CONTAINER */
+  .live-view-container {
+    padding: 10px;
+    gap: 18px;
+  }
+
+  /* HEADER (KEEP IN ONE ROW ✅) */
   .live-view-header {
-    flex-direction: row;
+    display: flex;
+    flex-direction: row; /* 🔥 FIX */
+    justify-content: space-between;
     align-items: center;
-    background-color: #ffffff;
-    padding: 14px 16px;
-    margin: -4px -4px 4px -4px;
-    border-bottom: 1px solid #edf2f7;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    padding: 12px;
+    gap: 8px;
   }
 
-  .live-view-title {
-    font-size: 19px;
-    letter-spacing: -0.3px;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0; /* allow title to truncate instead of pushing badge off-screen */
   }
 
-  .live-view-subtitle {
-    font-size: 12px;
-    color: #94a3b8;
+  .header-left .live-view-title,
+  .header-left .live-view-subtitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .search-bar {
+    width: 140px; /* 👈 don't go full width */
   }
 
   .hardware-status-badge {
     padding: 5px 10px;
     font-size: 11px;
-    letter-spacing: 0.2px;
   }
 
+  /* GRID -> SINGLE COLUMN */
   .live-gauges-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .gauge-card {
-    padding: 16px;
-    border-radius: 16px; 
-    border: none;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  }
-
-  .gauge-value-display {
-    margin: 8px 0 6px 0;
-  }
-
-  .gauge-value-display .number {
-    font-size: 32px; 
-  }
-
   .live-view-row-split {
-    grid-template-columns: 1fr !important;
     gap: 16px;
   }
 
-  .content-panel {
-    padding: 16px !important;
-    border-radius: 16px !important;
-    border: none !important;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  /* CARDS */
+  .gauge-card {
+    padding: 14px;
+    border-radius: 14px;
   }
 
-  /* Compact View filters for mobile scrolling */
+  .content-panel,
+  .database-explorer-sheet {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .panel-title { font-size: 15px; }
+  .panel-description { font-size: 13px; margin-bottom: 16px; }
+
+  /* TEXT */
+  .gauge-value-display .number {
+    font-size: 26px;
+  }
+
+  .gauge-value-display .unit {
+    font-size: 12px;
+  }
+
+  .live-view-title {
+    font-size: 18px;
+  }
+
+  .live-view-subtitle {
+    font-size: 12px;
+  }
+
+  /* BUTTON */
+  .signout-btn {
+    font-size: 13px;
+  }
+
+  .action-toggle-btn {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .history-control-panel {
+    justify-content: flex-start;
+  }
+
+  /* FILTER BAR */
   .explorer-filter-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
   }
 
   .filter-group-buttons {
+    width: 100%;
     overflow-x: auto;
-    display: flex;
+  }
+
+  .filter-group-buttons button {
+    flex: 1;
+    padding: 8px 10px;
     white-space: nowrap;
   }
 
   .native-app-calendar {
     width: 100%;
-    text-align: center;
   }
 
-  /* Compressed responsive matrix parameters for small touchscreens */
-  .agro-data-table th, 
-  .agro-data-table td {
-    padding: 10px 8px;
+  /* TABLE SCROLL */
+  .table-overflow-viewport {
+    overflow-x: auto;
+  }
+
+  .agro-data-table {
+    min-width: 600px;
+  }
+
+  /* NPK badges wrap instead of overflowing narrow table cells */
+  .npk-combined {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE — MOBILE PORTRAIT (≤480px)
+   Tightest breakpoint: phones in portrait.
+   ===================================================== */
+@media (max-width: 480px) {
+  .live-view-container {
+    padding: 8px;
+    gap: 14px;
+  }
+
+  .live-view-header {
+    padding: 10px;
+  }
+
+  .live-view-title {
+    font-size: 16px;
+  }
+
+  .live-view-subtitle {
+    font-size: 11px;
+  }
+
+  .search-bar {
+    width: 100px;
+  }
+
+  .hardware-status-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+    gap: 5px;
+  }
+
+  .hardware-status-badge span:not(.pulse-dot) {
+    display: none; /* keep just the dot on the smallest screens, drop the label text */
+  }
+
+  .gauge-card {
+    padding: 12px;
+  }
+
+  .gauge-value-display .number {
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+
+  .gauge-label {
+    font-size: 11px;
+  }
+
+  .content-panel,
+  .database-explorer-sheet {
+    padding: 12px;
+  }
+
+  .npk-bar-meta {
     font-size: 12px;
   }
 
-  .npk-combined {
-    flex-direction: column;
-    gap: 3px;
+  .agro-data-table {
+    font-size: 12px;
+  }
+
+  .agro-data-table th,
+  .agro-data-table td {
+    padding: 10px 10px;
+  }
+
+  .date-subtext {
+    display: none; /* trim secondary info on the tightest screens */
+  }
+
+  .filter-group-buttons button {
+    padding: 7px 8px;
+    font-size: 12px;
   }
 }

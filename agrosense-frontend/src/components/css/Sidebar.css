@@ -1,8 +1,8 @@
-
+/* ---------- SIDEBAR BASE ---------- */
 .sidebar {
   width: 260px;
   height: 100vh;
-  background-color: #064e3b; 
+  background-color: #064e3b;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -13,9 +13,23 @@
   left: 0;
   box-sizing: border-box;
   overflow-y: auto;
+  z-index: 1000;
+
+  /* smoother animation */
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
 }
 
+/* Smooth scroll feel */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 10px;
+}
 
+/* ---------- BRAND ---------- */
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -34,33 +48,33 @@
   font-weight: 500;
 }
 
-
+/* ---------- MENU ---------- */
 .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
+  gap: 14px;
+  padding: 12px 14px;
   color: #d1fae5;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: 10px;
+  transition: all 0.25s ease;
 }
-
 
 .menu-item:hover {
   background-color: #047857;
   color: #ffffff;
+  transform: translateX(4px);
 }
 
 .menu-item.active {
@@ -78,11 +92,80 @@
   opacity: 1;
 }
 
-
+/* ---------- WEATHER ---------- */
 .sidebar-weather {
   background-color: #047857;
   border-radius: 12px;
   padding: 14px;
   margin-top: 24px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------- MOBILE ---------- */
+
+/* Hidden by default */
+.sidebar-backdrop {
+  display: none;
+}
+
+/* Tablet & Mobile */
+@media (max-width: 1024px) {
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Backdrop */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+
+  .sidebar {
+    width: 85%;
+    max-width: 300px;
+    padding: 20px 14px;
+  }
+
+  .sidebar-brand {
+    font-size: 20px;
+  }
+
+  .sidebar-tagline {
+    font-size: 11px;
+  }
+
+  .menu-item {
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  .menu-item span {
+    flex: 1;
+  }
+
+  .sidebar-weather {
+    font-size: 12px;
+    padding: 12px;
+  }
 }

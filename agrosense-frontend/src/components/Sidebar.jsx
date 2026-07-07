@@ -1,15 +1,15 @@
 import React from 'react';
-import './css/Sidebar.css'; //dedicated styling file 
+import './css/Sidebar.css'; 
 
-function Sidebar({ currentTab, changeTab }) {
-  // Helper to handle smooth tab switching without refreshing
+function Sidebar({ currentTab, changeTab, isOpen, onClose }) {
+  
   const handleItemClick = (e, tabName) => {
     e.preventDefault();
     changeTab(tabName);
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div>
         <div className="sidebar-brand">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 9.8a7 7 0 0 1-9 8.2z"/><path d="M9 22v-4h4"/></svg>

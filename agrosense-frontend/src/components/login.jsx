@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/login.css'; // Perfectly loads your separate CSS file
+import './css/login.css'; 
 
 const Login = ({ onLoginSuccess }) => { 
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -18,7 +18,7 @@ const Login = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/token/', { 
+      const response = await fetch('http://localhost:8000/api/token/', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -32,10 +32,10 @@ const Login = ({ onLoginSuccess }) => {
         localStorage.setItem('username', credentials.username);
         if (onLoginSuccess) onLoginSuccess();
        if (data.is_superuser || data.is_staff) {
-        // Force the browser out of the local React App domain directly into Django Admin
-        window.location.href = 'http://127.0.0.1:8000/admin/';
+       
+        window.location.href = 'http://localhost:8000/admin/';
       } else {
-        // Standard farmers and device tracking nodes go to the telemetry React view
+    
         navigate('/dashboard');
       }
       } else {
@@ -50,7 +50,7 @@ const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className="auth-container">
-      {/* LEFT SIDE: Brand Branding Panel */}
+
       <div className="auth-sidebar">
         <div>
           <div className="auth-logo">🌱 AgroSense</div>
@@ -67,7 +67,7 @@ const Login = ({ onLoginSuccess }) => {
         {/* <div className="auth-sidebar-footer">📍 Bharatpur, Chitwan • System Status: Operational</div> */}
       </div>
 
-      {/* RIGHT SIDE: Login Form Panel */}
+     
       <div className="auth-form-panel">
         <div className="auth-form-card">
           <div className="auth-header-group">

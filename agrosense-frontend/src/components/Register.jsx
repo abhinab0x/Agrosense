@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Register.css'; // Connects directly to your custom Register.css file
+import './css/Register.css'; 
 
 const Register = () => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
@@ -41,7 +41,7 @@ const Register = () => {
 
   return (
     <div className="reg-container">
-      {/* BRANDING SIDEBAR PANEL */}
+     
       <div className="reg-sidebar">
         <div>
           <div className="reg-logo">🌱 AgroSense</div>
@@ -58,7 +58,7 @@ const Register = () => {
         {/* <div className="reg-sidebar-footer">📍 Bharatpur, Chitwan • Node Status: Standby</div> */}
       </div>
 
-      {/* FORM INPUT PANEL */}
+    
       <div className="reg-form-panel">
         <div className="reg-form-card">
           <div className="reg-header-group">

@@ -1,4 +1,4 @@
-/* Container resets to ensure fullscreen split layout */
+
 .reg-container {
   display: flex;
   min-height: 100vh;
@@ -13,7 +13,6 @@
   box-sizing: border-box;
 }
 
-/* Left branding bar matching dashboard green */
 .reg-sidebar {
   display: flex;
   flex-direction: column;
@@ -62,7 +61,7 @@
   color: #94a3b8;
 }
 
-/* Right interactive form area */
+
 .reg-form-panel {
   display: flex;
   flex: 1;
@@ -194,4 +193,37 @@
 
 .reg-login-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  /* 1. Stop forcing the container to be the exact window size */
+  .reg-container {
+    display: block; /* Switch from flex row to block stack */
+    position: relative;
+    min-height: auto;
+    width: 100%;
+  }
+
+  /* 2. Make the sidebar full width */
+  .reg-sidebar {
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  /* 3. Hide or minimize the sidebar content if needed */
+  .reg-sidebar-center {
+    display: none; /* Hiding this makes the registration form reach the top faster */
+  }
+
+  /* 4. Ensure the form panel takes full width */
+  .reg-form-panel {
+    padding: 30px 20px;
+    display: block;
+    overflow-y: visible;
+  }
+
+  .reg-form-card {
+    max-width: 100%;
+  }
 }

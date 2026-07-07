@@ -1,4 +1,4 @@
-/* Container resets to ensure fullscreen split layout */
+
 .auth-container {
   display: flex;
   min-height: 100vh;
@@ -13,7 +13,7 @@
   box-sizing: border-box;
 }
 
-/* Left branding bar matching dashboard green */
+
 .auth-sidebar {
   display: flex;
   flex-direction: column;
@@ -184,7 +184,7 @@
 
 .auth-button {
   width: 100%;
-  background-color: #10b981; /* Matches green accent action item button */
+  background-color: #10b981; 
   color: #ffffff;
   padding: 12px;
   border: none;
@@ -222,4 +222,37 @@
 
 .auth-register-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  /* Stack the layout vertically */
+  .auth-container {
+    flex-direction: column;
+    overflow-y: auto; /* Allow scrolling on small screens */
+    position: relative; /* Remove 'fixed' so it flows naturally */
+  }
+
+  /* Hide the sidebar or shrink it significantly */
+  .auth-sidebar {
+    width: 100%;
+    padding: 30px;
+    /* Optional: Hide sidebar entirely on mobile to save space */
+    /* display: none; */ 
+  }
+
+  /* Adjust sidebar text for mobile */
+  .auth-sidebar-title {
+    font-size: 28px;
+  }
+
+  /* Make the form panel fill the remaining space */
+  .auth-form-panel {
+    padding: 20px;
+    align-items: flex-start; /* Align to top on mobile */
+    padding-top: 40px;
+  }
+
+  .auth-form-card {
+    max-width: 100%; /* Use full width on mobile */
+  }
 }

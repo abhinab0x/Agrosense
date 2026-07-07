@@ -1,0 +1,333 @@
+.fert-page {
+  max-width: 720px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.fert-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.fert-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2e28;
+  margin: 0;
+}
+
+.fert-subtitle {
+  font-size: 14px;
+  color: #6b7a75;
+  margin-top: 4px;
+}
+
+.fert-refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid #d7ded9;
+  background: #ffffff;
+  color: #2d4a3e;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fert-refresh-btn:hover:not(:disabled) {
+  background: #f2f7f4;
+  border-color: #b9c9c0;
+}
+
+.fert-refresh-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.fert-icon-spin {
+  animation: fert-spin 0.9s linear infinite;
+}
+
+@keyframes fert-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Loading state */
+.fert-loading {
+  border-radius: 16px;
+  border: 1px solid #e3e8e5;
+  background: #ffffff;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9aa8a2;
+}
+
+.fert-loading p {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+/* Error state */
+.fert-error {
+  border-radius: 14px;
+  border: 1px solid #f3c6c6;
+  background: #fdf1f1;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fert-error-icon {
+  color: #d64545;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fert-error-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #9c2b2b;
+  margin: 0;
+}
+
+.fert-error-message {
+  font-size: 14px;
+  color: #b64545;
+  margin: 4px 0 0;
+}
+
+.fert-retry-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #9c2b2b;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Main card */
+.fert-card {
+  border-radius: 16px;
+  border: 1px solid #e3e8e5;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(20, 40, 32, 0.04);
+}
+
+.fert-card-hero {
+  padding: 28px 28px 24px;
+  background: linear-gradient(135deg, #1e4d3b 0%, #163a2d 100%);
+  color: #ffffff;
+}
+
+.fert-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9fd9b8;
+  margin-bottom: 10px;
+}
+
+.fert-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fert-result-name {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.fert-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fert-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.fert-timestamp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #c9e6d5;
+  margin-top: 14px;
+}
+
+/* Readings grid */
+.fert-readings {
+  padding: 24px 28px 28px;
+}
+
+.fert-readings-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #45564e;
+  margin: 0 0 14px;
+}
+
+.fert-readings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.fert-reading-tile {
+  border-radius: 12px;
+  background: #f4f8f6;
+  border: 1px solid #e9efec;
+  padding: 12px 14px;
+}
+
+.fert-reading-label {
+  font-size: 12px;
+  color: #7c8d85;
+  margin: 0 0 4px;
+}
+
+.fert-reading-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a2e28;
+  margin: 0;
+}
+
+.fert-reading-unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: #a4b2ac;
+  margin-left: 4px;
+}
+
+/* ---------- TABLET ---------- */
+@media (max-width: 768px) {
+  .fert-page {
+    max-width: 100%;
+    padding: 0 4px;
+  }
+
+  .fert-title {
+    font-size: 24px;
+  }
+
+  .fert-card-hero {
+    padding: 22px 20px 18px;
+  }
+
+  .fert-result-name {
+    font-size: 26px;
+  }
+
+  .fert-readings {
+    padding: 20px 20px 22px;
+  }
+
+  .fert-readings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 480px) {
+  .fert-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .fert-title {
+    font-size: 20px;
+  }
+
+  .fert-subtitle {
+    font-size: 13px;
+  }
+
+  .fert-refresh-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .fert-card-hero {
+    padding: 20px 16px 16px;
+  }
+
+  .fert-eyebrow {
+    font-size: 11px;
+  }
+
+  .fert-result-row {
+    flex-wrap: wrap;
+  }
+
+  .fert-result-name {
+    font-size: 22px;
+  }
+
+  .fert-copy-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fert-timestamp-row {
+    font-size: 12px;
+  }
+
+  .fert-readings {
+    padding: 16px 16px 20px;
+  }
+
+  .fert-readings-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .fert-reading-tile {
+    padding: 10px 12px;
+  }
+
+  .fert-reading-value {
+    font-size: 16px;
+  }
+
+  .fert-loading {
+    padding: 36px 16px;
+  }
+
+  .fert-error {
+    padding: 16px;
+  }
+}

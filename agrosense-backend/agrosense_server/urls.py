@@ -23,6 +23,10 @@ from telemetry.views import CustomTokenObtainPairView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('telemetry.urls')),
+    path('api/irrigation/', include('irrigation_advisor.urls')),
+    path('api/alerts/', include('alerts.urls')),
+    path('api/fertilizer/', include('fertilizer.urls')),
+      path('api/fields/', include('farms.urls')),
 
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
