@@ -38,7 +38,7 @@ export default function SoilHealthScore({ latestData }) {
 
         <div className="health-summary-details">
           <p>Your soil is in <strong>{label.toLowerCase()}</strong> condition for farming.</p>
-          <button className="health-details-action-btn">View Details</button>
+          {/* <button className="health-details-action-btn">View Details</button> */}
         </div>
       </div>
     </div>
