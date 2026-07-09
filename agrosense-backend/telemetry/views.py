@@ -1,10 +1,15 @@
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+from django.http import JsonResponse
+from django.conf import settings
+
 
 import os
 import random
 import joblib
+import pandas as pd
+
 
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -279,3 +284,33 @@ def get_crop_suggestion(request):
         },
         status=status.HTTP_200_OK
     )
+@api_view(['GET'])
+def get_crop_baselines(request):
+    try:
+        csv_path = os.path.join(settings.BASE_DIR.parent, "Crop_data.csv")
+
+        df = pd.read_csv(csv_path)
+
+        summary_dict = {}
+
+        for crop in df["crop_type"].unique():
+            crop_df = df[df["crop_type"] == crop]
+
+            summary_dict[crop.lower()] = {
+                "displayName": crop.title(),
+                "nMin": float(crop_df["N"].min()),
+                "nMax": float(crop_df["N"].max()),
+                "pMin": float(crop_df["P"].min()),
+                "pMax": float(crop_df["P"].max()),
+                "kMin": float(crop_df["K"].min()),
+                "kMax": float(crop_df["K"].max()),
+                "mMin": float(crop_df["soil_moisture"].min()),
+                "mMax": float(crop_df["soil_moisture"].max()),
+                "phMin": float(crop_df["ph"].min()),
+                "phMax": float(crop_df["ph"].max()),
+            }
+
+        return JsonResponse(summary_dict)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

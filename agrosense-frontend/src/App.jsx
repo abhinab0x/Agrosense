@@ -15,9 +15,9 @@ import RecommendationsPanel from './components/RecommendationsPanel';
 import FieldOverview from './components/FieldOverview';
 import SoilHealthScore from './components/SoilHealthScore';
 import History from './components/History';
+import Report from './components/Report';
 import FieldSwitcher from './components/FieldSwitcher';
-import { apiFetch } from './utils/api';
-import { initialSensorData } from './data/mockData';
+import { apiFetch, CROP_BASELINES_ENDPOINT } from './utils/api';import { initialSensorData } from './data/mockData';
 import './App.css';
 
 const API = 'http://127.0.0.1:8000';
@@ -131,6 +131,9 @@ function App() {
   const [selectedFieldId, setSelectedFieldId] = useState(
     localStorage.getItem('selectedFieldId') || null
   );
+
+  const [cropMetricsSummary, setCropMetricsSummary] = useState(null);
+  const [alternativeCrops, setAlternativeCrops] = useState([]);
 
   // ---------- Fields ----------
   const fetchFields = () => {
@@ -254,6 +257,40 @@ function App() {
   }, [isAuthenticated, selectedFieldId, fieldsLoaded]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    apiFetch('/api/crop-baselines/')
+      .then(res => res.ok ? res.json() : Promise.reject('Failed to fetch crop baselines'))
+      .then(data => setCropMetricsSummary(data))
+      .catch(err => console.error("Crop baselines load error:", err));
+  }, [isAuthenticated]);
+
+  // --- INSERTED HERE: Watch latest telemetry and map alternative crops ---
+  useEffect(() => {
+    if (!sensorReadings || sensorReadings.length === 0) return;
+    
+    const latestLog = sensorReadings[0]; 
+    const currentCrop = (latestLog?.recommended_crop || "coconut").toLowerCase().trim();
+
+    let alternatives = [];
+    if (currentCrop === "coconut") {
+      alternatives = [
+        { name: "Banana / Papaya", reason: "Excellent short-term fruit companions that thrive under high humidity." },
+        { name: "Ginger / Turmeric", reason: "Shade-tolerant root spices that utilize empty under-canopy floor rows." }
+      ];
+    } else if (currentCrop === "rice") {
+      alternatives = [
+        { name: "Black Gram", reason: "Fixes structural nitrogen levels during dry paddy rotation intervals." }
+      ];
+    } else {
+      alternatives = [
+        { name: "Soybean", reason: "An excellent rotational legume choice to re-enrich field mineral beds naturally." }
+      ];
+    }
+    setAlternativeCrops(alternatives);
+  }, [sensorReadings]);
+
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024 && sidebarOpen) {
         setSidebarOpen(false);
@@ -349,6 +386,15 @@ function App() {
     if (activeTab === 'irrigation-advisor') return <IrrigationAdvisory selectedFieldId={selectedFieldId} />;
     if (activeTab === 'fertilizer-suggestion') return <FertilizerForm selectedFieldId={selectedFieldId} />;
 
+    if (activeTab === 'recommendations') return <RecommendationsPanel latestData={latestData} selectedFieldId={selectedFieldId} />;
+    if (activeTab === 'reports') return (
+  <Report 
+    sensorReadings={sensorReadings} 
+    selectedFieldId={selectedFieldId} 
+    cropMetricsSummary={cropMetricsSummary}
+    alternativeCropsList={alternativeCrops}
+  />
+);
     if (activeTab === 'history') return <History selectedFieldId={selectedFieldId} />;
 
     if (activeTab === 'alerts') {
