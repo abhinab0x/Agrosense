@@ -17,7 +17,7 @@ import SoilHealthScore from './components/SoilHealthScore';
 import History from './components/History';
 import Report from './components/Report';
 import FieldSwitcher from './components/FieldSwitcher';
-import { apiFetch, CROP_BASELINES_ENDPOINT } from './utils/api';import { initialSensorData } from './data/mockData';
+import { apiFetch, CROP_BASELINES_ENDPOINT } from './utils/api'; import { initialSensorData } from './data/mockData';
 import './App.css';
 
 const API = 'http://127.0.0.1:8000';
@@ -242,9 +242,13 @@ function App() {
           return res.json();
         })
         .then((data) => {
-          setSensorReadings(data);
-          setLoading(false);
-        })
+  console.log("API Sensor Data:", data);
+  console.log("First sensor object:", data[0]);
+  console.log("recommended_crop:", data[0]?.recommended_crop);
+
+  setSensorReadings(data);
+  setLoading(false);
+})
         .catch(() => {
           setSensorReadings((prev) => (prev.length > 0 ? prev : (initialSensorData || [])));
           setLoading(false);
@@ -258,7 +262,7 @@ function App() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     apiFetch('/api/crop-baselines/')
       .then(res => res.ok ? res.json() : Promise.reject('Failed to fetch crop baselines'))
       .then(data => setCropMetricsSummary(data))
@@ -268,8 +272,10 @@ function App() {
   // --- INSERTED HERE: Watch latest telemetry and map alternative crops ---
   useEffect(() => {
     if (!sensorReadings || sensorReadings.length === 0) return;
-    
-    const latestLog = sensorReadings[0]; 
+
+    const latestLog = sensorReadings[0];
+    console.log("Current latestLog:", latestLog);
+    console.log("Recommended Crop:", latestLog?.recommended_crop);
     const currentCrop = (latestLog?.recommended_crop || "coconut").toLowerCase().trim();
 
     let alternatives = [];
@@ -372,9 +378,17 @@ function App() {
     );
   }
 
+  console.log("sensorReadings:", sensorReadings);
+  console.log("Is Array?", Array.isArray(sensorReadings));
+
   const latestData = sensorReadings[0] || {
-    soil_moisture: 0, temperature: 0, humidity: 0,
-    soil_ph: 7.0, nitrogen: 0, phosphorus: 0, potassium: 0,
+    soil_moisture: 0,
+    temperature: 0,
+    humidity: 0,
+    soil_ph: 7.0,
+    nitrogen: 0,
+    phosphorus: 0,      
+    potassium: 0,
   };
 
   const history = (key) =>
@@ -387,14 +401,20 @@ function App() {
     if (activeTab === 'fertilizer-suggestion') return <FertilizerForm selectedFieldId={selectedFieldId} />;
 
     if (activeTab === 'recommendations') return <RecommendationsPanel latestData={latestData} selectedFieldId={selectedFieldId} />;
-    if (activeTab === 'reports') return (
-  <Report 
-    sensorReadings={sensorReadings} 
-    selectedFieldId={selectedFieldId} 
-    cropMetricsSummary={cropMetricsSummary}
-    alternativeCropsList={alternativeCrops}
-  />
-);
+    if (activeTab === 'reports') {
+      console.log("latestData =", latestData);
+      console.log("recommended_crop =", latestData?.recommended_crop);
+
+      return (
+        <Report
+          sensorReadings={sensorReadings}
+          selectedFieldId={selectedFieldId}
+          cropMetricsSummary={cropMetricsSummary}
+          alternativeCropsList={alternativeCrops}
+          recommendedCrop={latestData?.recommended_crop}
+        />
+      );
+    }
     if (activeTab === 'history') return <History selectedFieldId={selectedFieldId} />;
 
     if (activeTab === 'alerts') {

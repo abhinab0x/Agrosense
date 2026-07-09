@@ -1,35 +1,62 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/api';
 
-export default function Report({ 
-  sensorReadings = [], 
-  selectedFieldId, 
-  recommendedCrop = "Coconut",
-  // 💡 Frontend now accepts pure backend JSON payloads directly without local defaults
+export default function Report({
+  sensorReadings = [],
+  selectedFieldId,
   cropMetricsSummary,
   alternativeCropsList = []
 }) {
+  const [recommendedCrop, setRecommendedCrop] = useState("");
 
-  // 1. Extract the most recent telemetry log package
-  const latestLog = sensorReadings && sensorReadings.length > 0 
-    ? sensorReadings[sensorReadings.length - 1] 
+  const latestLog = sensorReadings?.length > 0
+    ? sensorReadings[0]
     : null;
+  useEffect(() => {
+    if (!selectedFieldId) return;
 
-  // 2. Map live dashboard metrics dynamically 
+    apiFetch(`/api/crop-suggestion/?field_id=${selectedFieldId}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log("Crop API:", data);
+
+            if (data.prediction_result) {
+                setRecommendedCrop(data.prediction_result);
+            }
+        })
+        .catch(err => {
+            console.error("Crop API Error:", err);
+        });
+
+}, [selectedFieldId]);
+
+
   const nitrogen = latestLog?.nitrogen ?? 40;
   const phosphorus = latestLog?.phosphorus ?? 30;
   const potassium = latestLog?.potassium ?? 35;
-  const moisture = latestLog?.soil_moisture ?? 157; // Matches your live 157% view
+  const moisture = latestLog?.soil_moisture ?? 157;
   const ph = latestLog?.soil_ph ?? 6.5;
   const temp = latestLog?.temperature ?? 26.3;
   const humidity = latestLog?.humidity ?? 85.4;
 
-  // 3. Normalize the recommended crop target string from the backend model
-  const activeCropKey = (latestLog?.recommended_crop || recommendedCrop).toLowerCase().trim();
-  
-  // 4. Safely read from your live backend summary payload
+  const activeCropKey = (
+    recommendedCrop || "coconut"
+).toLowerCase().trim();
+
+
+  console.log("recommendedCrop prop =", recommendedCrop);
+  console.log("latestLog =", latestLog);
+  console.log("activeCropKey =", activeCropKey);
+
   const cropData = cropMetricsSummary?.[activeCropKey];
 
-  // Loading state handling in case the API fetch is still in progress
+  console.log("========= REPORT =========");
+  console.log("sensorReadings =", sensorReadings);
+  console.log("latestLog =", latestLog);
+  console.log("activeCropKey =", activeCropKey);
+  console.log("cropMetricsSummary =", cropMetricsSummary);
+  console.log("cropData =", cropData);
+
   if (!cropData) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif', color: '#64748b' }}>
@@ -39,7 +66,6 @@ export default function Report({
     );
   }
 
-  // 5. Dynamic status evaluation criteria matching your live dataset parameters
   const nStatus = nitrogen >= cropData.nMin && nitrogen <= cropData.nMax ? 'Optimal Baseline' : nitrogen < cropData.nMin ? 'Critically Low' : 'Surplus';
   const pStatus = phosphorus >= cropData.pMin && phosphorus <= cropData.pMax ? 'Optimal Baseline' : phosphorus < cropData.pMin ? 'Critically Low' : 'Surplus';
   const kStatus = potassium >= cropData.kMin && potassium <= cropData.kMax ? 'Optimal Baseline' : potassium < cropData.kMin ? 'Critically Low' : 'Surplus';
@@ -48,9 +74,9 @@ export default function Report({
 
   return (
     <div style={{ background: '#f8fafc', padding: '20px', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1e293b', minHeight: '100vh' }}>
-      
+
       <div style={{ maxWidth: '900px', margin: '0 auto', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', padding: '40px' }}>
-        
+
         {/* Document Header */}
         <div style={{ borderBottom: '3px solid #16a34a', paddingBottom: '20px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
@@ -80,7 +106,7 @@ export default function Report({
         <p style={{ fontSize: '14px', color: '#334155', margin: '0 0 12px 0' }}>
           This matrix cross-references live hardware telemetry signals directly against data-driven parameters dynamically computed from your <strong>{cropData.displayName}</strong> dataset records.
         </p>
-        
+
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left', marginBottom: '24px' }}>
           <thead>
             <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
@@ -126,7 +152,7 @@ export default function Report({
 
         {/* Section 3: Primary & Alternative Crop Matching */}
         <h3 style={{ fontSize: '16px', color: '#14532d', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', marginBottom: '12px', marginTop: '28px' }}>3. Dynamic Dataset Crop Strategy</h3>
-        
+
         <div style={{ background: '#f0fdf4', borderLeft: '4px solid #16a34a', padding: '12px 16px', margin: '12px 0', borderRadius: '0 8px 8px 0' }}>
           <div style={{ fontSize: '16px', fontWeight: '700', color: '#14532d' }}>Optimal Selection Output: {cropData.displayName.toUpperCase()}</div>
           <div style={{ fontSize: '13px', color: '#365314', marginTop: '4px', lineHeight: '1.5' }}>
