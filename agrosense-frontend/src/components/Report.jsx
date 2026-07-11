@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { apiFetch } from '../utils/api';
 
 export default function Report({
@@ -8,10 +10,13 @@ export default function Report({
   alternativeCropsList = []
 }) {
   const [recommendedCrop, setRecommendedCrop] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const reportRef = useRef(null);
 
   const latestLog = sensorReadings?.length > 0
     ? sensorReadings[0]
     : null;
+
   useEffect(() => {
     if (!selectedFieldId) return;
 
@@ -43,19 +48,61 @@ export default function Report({
     recommendedCrop || "coconut"
 ).toLowerCase().trim();
 
-
-  console.log("recommendedCrop prop =", recommendedCrop);
-  console.log("latestLog =", latestLog);
-  console.log("activeCropKey =", activeCropKey);
-
   const cropData = cropMetricsSummary?.[activeCropKey];
 
-  console.log("========= REPORT =========");
-  console.log("sensorReadings =", sensorReadings);
-  console.log("latestLog =", latestLog);
-  console.log("activeCropKey =", activeCropKey);
-  console.log("cropMetricsSummary =", cropMetricsSummary);
-  console.log("cropData =", cropData);
+  // ---------- Download helpers ----------
+  const getTimestampedFilename = () => {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    const timePart = `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+    return `report_${datePart}_${timePart}.pdf`;
+  };
+
+  const handleDownload = async () => {
+    if (!reportRef.current) return;
+
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2, // sharper output
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+
+      // A4-sized PDF, scaling the captured canvas to fit the page width
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add extra pages if the report is taller than one A4 page
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(getTimestampedFilename());
+    } catch (err) {
+      console.error("Failed to generate report PDF:", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (!cropData) {
     return (
@@ -75,7 +122,32 @@ export default function Report({
   return (
     <div style={{ background: '#f8fafc', padding: '20px', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1e293b', minHeight: '100vh' }}>
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', padding: '40px' }}>
+      {/* Download Button */}
+      <div style={{ maxWidth: '900px', margin: '0 auto 16px auto', display: 'flex', justifyContent: 'flex-end' }}>
+        <button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: isDownloading ? '#86efac' : '#16a34a',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '10px 18px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: isDownloading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            transition: 'background 0.2s ease',
+          }}
+        >
+          {isDownloading ? 'Generating PDF...' : '⬇ Download Report'}
+        </button>
+      </div>
+
+      <div ref={reportRef} style={{ maxWidth: '900px', margin: '0 auto', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', padding: '40px' }}>
 
         {/* Document Header */}
         <div style={{ borderBottom: '3px solid #16a34a', paddingBottom: '20px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
