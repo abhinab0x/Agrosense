@@ -429,6 +429,85 @@
     font-size: 32px;
   }
 }
+/* ===== Add this block to your existing css/LiveDataView.css ===== */
+
+.trend-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.trend-section-header {
+  margin-bottom: 4px;
+}
+
+.trend-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.trend-chart-card {
+  background-color: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.trend-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.trend-chart-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trend-chart-latest {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.trend-chart-svg {
+  width: 100%;
+  height: 120px;
+  display: block;
+}
+
+.trend-chart-gridline {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.trend-chart-tick-label {
+  font-size: 8px;
+  fill: #94a3b8;
+  font-weight: 600;
+}
+
+.trend-chart-empty {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .trend-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
 
 
 /* =====================================================

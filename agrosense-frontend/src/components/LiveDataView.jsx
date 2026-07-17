@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { apiFetch } from '../utils/api';
 import './css/LiveDataView.css';
 
@@ -8,49 +8,106 @@ function LiveDataView({ selectedFieldId }) {
     pH: 7.0, nitrogen: 0, phosphorus: 0, potassium: 0
   });
   const [connectionStatus, setConnectionStatus] = useState('CONNECTING...');
+
+  // Always-on "today, morning to evening" trend data — independent of
+  // the explorer table below, so the daily picture is visible at a glance
+  // without needing to click "Open Database Explorer" first.
+  const [todayRecords, setTodayRecords] = useState([]);
+  const [todayLoading, setTodayLoading] = useState(true);
+
   const [dbRecords, setDbRecords] = useState([]);
   const [isTableVisible, setIsTableVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState('today');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  
   const activeFilterRef = useRef(activeFilter);
   const isTableVisibleRef = useRef(isTableVisible);
 
   useEffect(() => { activeFilterRef.current = activeFilter; }, [activeFilter]);
   useEffect(() => { isTableVisibleRef.current = isTableVisible; }, [isTableVisible]);
 
-  
+  const buildHistoryUrl = (fieldId, filter, date) => {
+    let url = `/api/sensors/?field_id=${fieldId}&filter=${filter}`;
+    if (filter === 'custom') url += `&date=${date}`;
+    return url;
+  };
+
+  // ---------- Today's full-day trend (always fetched, always visible) ----------
+  const fetchTodayTrend = (signal) => {
+    if (!selectedFieldId) return;
+    apiFetch(buildHistoryUrl(selectedFieldId, 'today'), { signal })
+      .then((res) => {
+        if (!res.ok) throw new Error('Trend query failed');
+        return res.json();
+      })
+      .then((data) => {
+        const ascending = [...(data || [])].sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+        setTodayRecords(ascending);
+        setTodayLoading(false);
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        console.error('Today trend fetch failed:', err);
+        setTodayLoading(false);
+      });
+  };
+
   useEffect(() => {
-    if (!isTableVisible || !selectedFieldId) return;
-
-    setLoadingHistory(true);
-    let url = `/api/sensors/?field_id=${selectedFieldId}&filter=${activeFilter}`;
-    if (activeFilter === 'custom') url += `&date=${selectedDate}`;
-
+    if (!selectedFieldId) return;
+    setTodayLoading(true);
     const controller = new AbortController();
+    fetchTodayTrend(controller.signal);
 
-    apiFetch(url, { signal: controller.signal })
-      .then(res => {
+    // Refresh the day's trend every 60s so it fills in as new readings arrive.
+    const interval = setInterval(() => fetchTodayTrend(), 60000);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, [selectedFieldId]);
+
+  // ---------- Explorer table (Today / Yesterday / custom date, filterable) ----------
+  const fetchHistory = (signal) => {
+    if (!selectedFieldId) return;
+    setLoadingHistory(true);
+
+    apiFetch(buildHistoryUrl(selectedFieldId, activeFilter, selectedDate), { signal })
+      .then((res) => {
         if (!res.ok) throw new Error('Timeline query failed');
         return res.json();
       })
-      .then(data => {
-        setDbRecords(data || []);
+      .then((data) => {
+        const sorted = [...(data || [])].sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        setDbRecords(sorted);
         setLoadingHistory(false);
       })
-      .catch(err => {
-        if (err.name === 'AbortError') return; 
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
         console.error('DB fetch failed:', err);
         setDbRecords([]);
         setLoadingHistory(false);
       });
+  };
 
-    return () => controller.abort(); 
+  useEffect(() => {
+    if (!isTableVisible || !selectedFieldId) return;
+    const controller = new AbortController();
+    fetchHistory(controller.signal);
+    return () => controller.abort();
   }, [activeFilter, selectedDate, isTableVisible, selectedFieldId]);
 
-  
+  useEffect(() => {
+    if (!isTableVisible || activeFilter !== 'today' || !selectedFieldId) return;
+    const syncInterval = setInterval(() => fetchHistory(), 30000);
+    return () => clearInterval(syncInterval);
+  }, [isTableVisible, activeFilter, selectedFieldId]);
+
+  // ---------- Live gauge polling ----------
   useEffect(() => {
     if (!selectedFieldId) {
       setConnectionStatus('NO FIELD SELECTED');
@@ -59,49 +116,52 @@ function LiveDataView({ selectedFieldId }) {
 
     const fetchLive = () => {
       apiFetch(`/api/sensors/?field_id=${selectedFieldId}`)
-        .then(res => {
+        .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
-        .then(data => {
+        .then((data) => {
           if (!data || data.length === 0) return;
 
           const latest = data[0];
           const fresh = {
-            moisture:    latest.soil_moisture  ?? 0,
-            temperature: latest.temperature    ?? 0,
-            humidity:    latest.humidity       ?? 0,
-            pH:          latest.soil_ph        ?? 7.0,
-            nitrogen:    latest.nitrogen       ?? 0,
-            phosphorus:  latest.phosphorus     ?? 0,
-            potassium:   latest.potassium      ?? 0,
-            timestamp:   latest.timestamp      || new Date().toISOString(),
+            moisture: latest.soil_moisture ?? 0,
+            temperature: latest.temperature ?? 0,
+            humidity: latest.humidity ?? 0,
+            pH: latest.soil_ph ?? 7.0,
+            nitrogen: latest.nitrogen ?? 0,
+            phosphorus: latest.phosphorus ?? 0,
+            potassium: latest.potassium ?? 0,
+            timestamp: latest.timestamp || new Date().toISOString(),
           };
 
-        
           setLiveMetrics(fresh);
           setConnectionStatus('CONNECTED');
 
-     
+          setTodayRecords((prev) => {
+            const isDuplicate = prev.some((r) => r.timestamp === latest.timestamp);
+            if (isDuplicate) return prev;
+            return [...prev, latest];
+          });
+
           if (activeFilterRef.current === 'today' && isTableVisibleRef.current) {
-            setDbRecords(prev => {
-              const isDuplicate = prev.some(r => r.timestamp === latest.timestamp);
+            setDbRecords((prev) => {
+              const isDuplicate = prev.some((r) => r.timestamp === latest.timestamp);
               if (isDuplicate) return prev;
               return [latest, ...prev];
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error('Live stream error:', err);
           setConnectionStatus('DISCONNECTED');
         });
     };
 
-    fetchLive(); 
+    fetchLive();
     const interval = setInterval(fetchLive, 2500);
-    return () => clearInterval(interval); 
-  }, [selectedFieldId]); 
-
+    return () => clearInterval(interval);
+  }, [selectedFieldId]);
 
   const getMoistureStatus = (val) => {
     if (val < 30) return { text: 'Warning: Arid Soil / Wilting Risk', class: 'text-danger' };
@@ -124,6 +184,113 @@ function LiveDataView({ selectedFieldId }) {
     return { text: 'Balanced Neutral Range', class: 'text-purple' };
   };
 
+  // ---------- Day trend chart (pure SVG, no extra dependency) ----------
+  const DAY_START_HOUR = 5;   // 5 AM
+  const DAY_END_HOUR = 21;    // 9 PM
+  const CHART_W = 600;
+  const CHART_H = 120;
+  const PAD_L = 34;
+  const PAD_R = 10;
+  const PAD_T = 10;
+  const PAD_B = 22;
+
+  const hourFraction = (isoString) => {
+    const d = new Date(isoString);
+    return d.getHours() + d.getMinutes() / 60;
+  };
+
+  const xForHour = (h) => {
+    const clamped = Math.max(DAY_START_HOUR, Math.min(h, DAY_END_HOUR));
+    const frac = (clamped - DAY_START_HOUR) / (DAY_END_HOUR - DAY_START_HOUR);
+    return PAD_L + frac * (CHART_W - PAD_L - PAD_R);
+  };
+
+  const yFor = (value, min, max) => {
+    const clamped = Math.max(min, Math.min(value, max));
+    const frac = (clamped - min) / (max - min || 1);
+    return CHART_H - PAD_B - frac * (CHART_H - PAD_T - PAD_B);
+  };
+
+  const buildPath = (records, key, min, max) => {
+    if (records.length === 0) return '';
+    return records
+      .map((r, i) => {
+        const x = xForHour(hourFraction(r.timestamp));
+        const y = yFor(Number(r[key]) || 0, min, max);
+        return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(' ');
+  };
+
+  const hourTicks = [6, 9, 12, 15, 18, 21];
+
+  const trendMetrics = useMemo(() => ([
+    { key: 'soil_moisture', label: 'Soil Moisture', unit: '%', color: '#3b82f6', min: 0, max: 100 },
+    { key: 'temperature', label: 'Temperature', unit: '°C', color: '#ea580c', min: 0, max: 50 },
+    { key: 'humidity', label: 'Humidity', unit: '%', color: '#16a34a', min: 0, max: 100 },
+    { key: 'soil_ph', label: 'Soil pH', unit: '', color: '#7c3aed', min: 0, max: 14 },
+  ]), []);
+
+  const renderTrendChart = ({ key, label, unit, color, min, max }) => {
+    const values = todayRecords.map((r) => Number(r[key]) || 0);
+    const latestValue = values.length ? values[values.length - 1] : null;
+
+    return (
+      <div className="trend-chart-card" key={key}>
+        <div className="trend-chart-header">
+          <span className="trend-chart-label">{label}</span>
+          {latestValue !== null && (
+            <span className="trend-chart-latest">
+              {latestValue}{unit}
+            </span>
+          )}
+        </div>
+
+        {todayRecords.length === 0 ? (
+          <div className="trend-chart-empty">No readings yet today</div>
+        ) : (
+          <svg viewBox={`0 0 ${CHART_W} ${CHART_H}`} className="trend-chart-svg" preserveAspectRatio="none">
+            {hourTicks.map((h) => (
+              <line
+                key={h}
+                x1={xForHour(h)} x2={xForHour(h)}
+                y1={PAD_T} y2={CHART_H - PAD_B}
+                className="trend-chart-gridline"
+              />
+            ))}
+            <path
+              d={buildPath(todayRecords, key, min, max)}
+              fill="none"
+              stroke={color}
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+            {todayRecords.map((r, i) => (
+              <circle
+                key={i}
+                cx={xForHour(hourFraction(r.timestamp))}
+                cy={yFor(Number(r[key]) || 0, min, max)}
+                r="2.2"
+                fill={color}
+              />
+            ))}
+            {hourTicks.map((h) => (
+              <text
+                key={h}
+                x={xForHour(h)}
+                y={CHART_H - 6}
+                className="trend-chart-tick-label"
+                textAnchor="middle"
+              >
+                {h % 12 === 0 ? 12 : h % 12}{h < 12 ? 'AM' : 'PM'}
+              </text>
+            ))}
+          </svg>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="live-view-container">
@@ -196,6 +363,20 @@ function LiveDataView({ selectedFieldId }) {
         </div>
       </div>
 
+      <div className="content-panel trend-section">
+        <div className="trend-section-header">
+          <span className="panel-title">Today's Trend — Morning to Evening</span>
+          <p className="panel-description">
+            {todayLoading
+              ? 'Loading today\'s readings…'
+              : `${todayRecords.length} reading${todayRecords.length === 1 ? '' : 's'} recorded so far today.`}
+          </p>
+        </div>
+        <div className="trend-charts-grid">
+          {trendMetrics.map(renderTrendChart)}
+        </div>
+      </div>
+
       <div className="live-view-row-split">
         <div className="content-panel npk-live-panel">
           <span className="panel-title">Macro-Nutrient Live Indexes (N-P-K)</span>
@@ -223,10 +404,10 @@ function LiveDataView({ selectedFieldId }) {
 
         <div className="content-panel history-control-panel">
           <span className="panel-title">Database Storage & Logging Logs</span>
-          <p className="panel-description">Analyze incremental timelines of field metrics from morning to current status check intervals.</p>
+          <p className="panel-description">Analyze incremental timelines of field metrics from morning to current status intervals.</p>
           <button
             className={`action-toggle-btn ${isTableVisible ? 'active' : ''}`}
-            onClick={() => setIsTableVisible(v => !v)}
+            onClick={() => setIsTableVisible((v) => !v)}
           >
             {isTableVisible ? '🔒 Close Database Explorer' : '📊 Open Complete Database Explorer'}
           </button>
@@ -247,7 +428,7 @@ function LiveDataView({ selectedFieldId }) {
                   type="date"
                   value={selectedDate}
                   max={new Date().toISOString().split('T')[0]}
-                  onChange={e => setSelectedDate(e.target.value)}
+                  onChange={(e) => setSelectedDate(e.target.value)}
                   className="native-app-calendar"
                 />
               </div>
