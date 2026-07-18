@@ -1,56 +1,51 @@
 .field-switcher {
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .field-switcher-trigger {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 8px 14px;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
   cursor: pointer;
+  font-family: inherit;
+  max-width: 200px;
   transition: border-color 0.15s ease, background 0.15s ease;
-  min-width: 180px;
 }
 
 .field-switcher-trigger:hover {
-  background: #f8fafc;
   border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
 .field-switcher-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  background: #f0fdf4;
   color: #16a34a;
   flex-shrink: 0;
-  font-size: 13px;
 }
 
 .field-switcher-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  flex: 1;
   min-width: 0;
+  flex: 1;
 }
 
 .field-switcher-name {
-  font-size: 13.5px;
   font-weight: 700;
-  color: #1e293b;
-  line-height: 1.15;
+  font-size: 14px;
+  color: #0f172a;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140px;
+  max-width: 100%;
 }
 
 .field-switcher-location {
@@ -59,13 +54,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140px;
+  max-width: 100%;
 }
 
 .field-switcher-chevron {
   color: #94a3b8;
   flex-shrink: 0;
-  font-size: 11px;
   transition: transform 0.15s ease;
 }
 
@@ -73,25 +67,29 @@
   transform: rotate(180deg);
 }
 
+/* ===== Dropdown menu ===== */
+
 .field-switcher-menu {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 260px;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 240px;
+  max-height: 320px;
+  overflow-y: auto;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 100;
   padding: 8px;
-  z-index: 50;
 }
 
 .field-switcher-option {
   padding: 10px 12px;
-  border-radius: 9px;
+  border-radius: 8px;
   cursor: pointer;
+  color: #0f172a;
   font-size: 14px;
-  color: #1e293b;
   transition: background 0.12s ease;
 }
 
@@ -102,13 +100,14 @@
 .field-switcher-option.active {
   background: #f0fdf4;
   font-weight: 700;
+  color: #16a34a;
 }
 
 .field-switcher-option-location {
   font-size: 11px;
   color: #94a3b8;
   font-weight: 400;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .field-switcher-divider {
@@ -119,11 +118,12 @@
 
 .field-switcher-add-trigger {
   padding: 10px 12px;
-  border-radius: 9px;
+  border-radius: 8px;
   cursor: pointer;
   color: #16a34a;
   font-weight: 600;
   font-size: 14px;
+  transition: background 0.12s ease;
 }
 
 .field-switcher-add-trigger:hover {
@@ -138,26 +138,28 @@
 }
 
 .field-switcher-add-form input {
-  padding: 9px 10px;
-  border-radius: 7px;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid #e2e8f0;
   font-size: 13px;
   font-family: inherit;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field-switcher-add-form input:focus {
-  outline: none;
   border-color: #16a34a;
 }
 
 .field-switcher-save-btn {
-  padding: 9px;
-  border-radius: 7px;
+  padding: 8px;
+  border-radius: 6px;
   border: none;
   background: #16a34a;
   color: #ffffff;
   font-weight: 600;
-  font-size: 13.5px;
+  font-size: 13px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -166,9 +168,23 @@
   background: #15803d;
 }
 
-@media (max-width: 640px) {
+/* =====================================================
+   RESPONSIVE — TABLET (≤1024px)
+   ===================================================== */
+@media (max-width: 1024px) {
   .field-switcher-trigger {
-    min-width: 0;
+    max-width: 160px;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE — MOBILE (≤768px)
+   ===================================================== */
+@media (max-width: 768px) {
+  .field-switcher-trigger {
+    max-width: 120px;
+    padding: 6px 10px;
+    gap: 6px;
   }
 
   .field-switcher-location {
@@ -176,6 +192,35 @@
   }
 
   .field-switcher-name {
-    max-width: 90px;
+    font-size: 13px;
+  }
+
+  .field-switcher-menu {
+    left: auto;
+    right: 0;
+    min-width: 220px;
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* =====================================================
+   RESPONSIVE — SMALL MOBILE (≤480px)
+   ===================================================== */
+@media (max-width: 480px) {
+  .field-switcher-trigger {
+    max-width: 96px;
+    padding: 6px 8px;
+  }
+
+  .field-switcher-name {
+    font-size: 12px;
+  }
+
+  .field-switcher-menu {
+    min-width: 200px;
+  }
+
+  .field-switcher-option {
+    padding: 12px 10px;
   }
 }

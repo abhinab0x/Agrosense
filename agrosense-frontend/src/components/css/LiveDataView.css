@@ -510,9 +510,7 @@
 }
 
 
-/* =====================================================
-   RESPONSIVE — MOBILE LANDSCAPE / SMALL TABLET (≤768px)
-   ===================================================== */
+
 @media (max-width: 768px) {
    .main-content {
     min-height: auto;
