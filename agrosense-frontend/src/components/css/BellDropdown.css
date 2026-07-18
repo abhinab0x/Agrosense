@@ -1,0 +1,290 @@
+.bell-dropdown-wrap {
+  position: relative;
+}
+
+.bell-dropdown-trigger {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 7px;
+  border-radius: 8px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.bell-dropdown-trigger.open,
+.bell-dropdown-trigger:hover {
+  background: #f1f5f9;
+}
+
+.bell-dropdown-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* ===== Backdrop (mobile only — see media query below) ===== */
+
+.bell-dropdown-backdrop {
+  display: none;
+}
+
+/* ===== Panel ===== */
+
+.bell-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 348px;
+  max-height: 480px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, sans-serif;
+}
+
+.bell-dropdown-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafafa;
+}
+
+.bell-dropdown-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bell-dropdown-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.bell-dropdown-count-badge {
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 2px 7px;
+}
+
+.bell-dropdown-count-badge.unread {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+.bell-dropdown-count-badge.clear {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  font-weight: 600;
+}
+
+.bell-dropdown-mark-all-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.bell-dropdown-mark-all-btn:hover {
+  background: #f1f5f9;
+}
+
+.bell-dropdown-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bell-dropdown-empty {
+  padding: 44px 20px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.bell-dropdown-empty-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.bell-dropdown-empty-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.bell-dropdown-empty-subtitle {
+  font-size: 12px;
+}
+
+.bell-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.12s;
+  cursor: default;
+}
+
+.bell-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.bell-dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.bell-dropdown-item-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.bell-dropdown-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bell-dropdown-item-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.bell-dropdown-item-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.bell-dropdown-item-severity {
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.bell-dropdown-item-message {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 210px;
+}
+
+.bell-dropdown-item-time {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+.bell-dropdown-item-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #cbd5e1;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.bell-dropdown-item-dismiss:hover {
+  color: #64748b;
+}
+
+.bell-dropdown-footer {
+  padding: 10px 16px;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  background: #fafafa;
+}
+
+/* =====================================================
+   RESPONSIVE — MOBILE (≤480px)
+   Instead of anchoring to the bell (which overflows off-screen
+   when the bell sits near the right edge on a narrow viewport),
+   the panel becomes a fixed, centered sheet with its own backdrop.
+   ===================================================== */
+@media (max-width: 480px) {
+  .bell-dropdown-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 9998;
+  }
+
+  .bell-dropdown-panel {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 90px);
+    z-index: 9999;
+  }
+
+  .bell-dropdown-item-message {
+    max-width: none; /* let it wrap instead of clipping on the wider mobile sheet */
+    white-space: normal;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE — TABLET (481px–768px)
+   Keep anchored to the bell but clamp width so it can't
+   overflow a mid-size viewport either.
+   ===================================================== */
+@media (min-width: 481px) and (max-width: 768px) {
+  .bell-dropdown-panel {
+    width: min(348px, calc(100vw - 32px));
+  }
+}
